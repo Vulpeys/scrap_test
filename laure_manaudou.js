@@ -1,6 +1,6 @@
-let axios = require('axios');
-let cheerio = require('cheerio');
-let fs = require('fs');
+const axios = require('axios');
+const cheerio = require('cheerio');
+const fs = require('fs');
 
 axios.get('https://actu17.fr/attentat-de-strasbourg-cherif-chekatt-a-ete-neutralise/')
     .then((response) => {
@@ -8,8 +8,7 @@ axios.get('https://actu17.fr/attentat-de-strasbourg-cherif-chekatt-a-ete-neutral
             const html = response.data;
             const $ = cheerio.load(html); 
             let devtoList = [];
-            const name = $(html).find('h1').text();
-            console.log(name);
+            const name = $(html).find('h1').text().replace(/ /gi, '_');
             $('p[dir="ltr"]').each(function(i, elem) {
                  devtoList[i] = {
                      text: $(this).text(),
