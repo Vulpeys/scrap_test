@@ -7,20 +7,24 @@ axios.get('https://actu17.fr/attentat-de-strasbourg-cherif-chekatt-a-ete-neutral
         if(response.status === 200) {
             const html = response.data;
             const $ = cheerio.load(html); 
-            let devtoList = [];
+            let scrapedList = [];
             const name = $(html).find('h1').text().replace(/ /gi, '_');
             $('p[dir="ltr"]').each(function(i, elem) {
-                 devtoList[i] = {
-                     text: $(this).text(),
-                     tags: $(this).find('a').text().split('#')
-                           .map(tag =>tag.trim())
-                           .filter(function(n){ return n != "" }),
-                     url: $(this).find("a").attr("href")
+                $(this).find("a:last-child").remove();
+                 scrapedList[i] = {
+                    text: $(this).text(),
+                    tags: $(this).find('a')
+                    .filter((i, txt) => $(txt).text()[0] == '#')
+                    .text()
+                    .split('#')
+                    .map(tag => tag.trim())
+                    .filter(function(n){ return n != "" }),
+                    url: $(this).find("a:last-child").attr("href")
                  }      
             });
-            const devtoListTrimmed = devtoList.filter(n => n != undefined )
+            const scrapedListTrimmed = scrapedList.filter(n => n != undefined )
             fs.writeFile(`${name}.json`, 
-                          JSON.stringify(devtoListTrimmed, null, 4), 
+                          JSON.stringify(scrapedListTrimmed, null, 4), 
                           (err)=> console.log('File successfully written!'))
     }
 }, (error) => console.log(err) );
